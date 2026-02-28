@@ -2,8 +2,11 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpSim Pro - Kesintisiz Lansman</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>PumpSim Pro - Kesin Çözüm</title>
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         :root {
@@ -35,17 +38,19 @@
         .market-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
         .coin-info { text-align: left; }
         .coin-title { font-size: 2em; font-weight: 900; color: white; margin-bottom: 5px;}
-        .price-display { font-size: 1.8em; color: var(--up-color); font-family: monospace; font-weight: bold; }
+        .price-display { font-size: 1.8em; color: var(--up-color); font-family: monospace; font-weight: bold; transition: 0.2s; }
         
         #tvchart { width: 100%; height: 450px; background: #131722; border: 1px solid #2a2e39; border-radius: 8px; overflow: hidden; }
 
         .action-panel { display: flex; gap: 15px; margin-top: 20px; }
         .trade-box { flex: 1; background: #131722; padding: 20px; border-radius: 8px; border: 1px solid #2a2e39; text-align: center; }
-        .btn { width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; text-transform: uppercase; margin-top: 10px; transition: 0.2s;}
+        
+        /* Buton Efektleri Eklendi */
+        .btn { width: 100%; padding: 15px; font-size: 1.3em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; text-transform: uppercase; margin-top: 10px; transition: 0.1s ease-in-out;}
         .btn-buy { background: var(--up-color); }
-        .btn-buy:hover { background: #33b5a5; transform: scale(1.02); }
+        .btn-buy:active { background: #1d7d74; transform: scale(0.95); } /* Tıklama hissi */
         .btn-sell { background: var(--down-color); }
-        .btn-sell:hover { background: #f0625d; transform: scale(1.02); }
+        .btn-sell:active { background: #c63936; transform: scale(0.95); } /* Tıklama hissi */
         
         .balance-info { font-size: 1em; color: #aaa; }
         .highlight { color: var(--secondary); font-weight: bold; }
@@ -60,7 +65,6 @@
 
     <div class="container" id="setupScreen">
         <h2 style="color: white; font-size: 2em; margin-bottom: 5px;">🚀 Projeyi Başlat</h2>
-        <p style="color: #888;">TradingView destekli Pump.fun simülasyonu</p>
         <div class="input-group">
             <input type="text" id="tokenName" value="PUMA" placeholder="Örn: DUCKCOIN" autocomplete="off" maxlength="10">
         </div>
@@ -73,7 +77,7 @@
                 <div class="coin-title" id="marketTokenName">COIN / USD</div>
                 <div class="balance-info" id="tokenBalanceDisplay">Cüzdan: <span class="highlight">0.00</span> Adet</div>
             </div>
-            <div class="price-display">$<span id="tokenPrice">0.001000</span></div>
+            <div class="price-display" id="tokenPriceDisplay">$<span id="tokenPrice">0.001000</span></div>
         </div>
         
         <div id="tvchart"></div>
@@ -81,11 +85,11 @@
         <div class="action-panel">
             <div class="trade-box">
                 <div class="balance-info">Alınacak Tutar: $100</div>
-                <button class="btn btn-buy" onclick="executeBuy()">AL</button>
+                <button class="btn btn-buy" onclick="executeBuy()">Yukarı İt (AL)</button>
             </div>
             <div class="trade-box">
                 <div class="balance-info">Tümünü Sat</div>
-                <button class="btn btn-sell" onclick="executeSell()">SAT</button>
+                <button class="btn btn-sell" onclick="executeSell()">Çak (SAT)</button>
             </div>
         </div>
     </div>
@@ -96,22 +100,26 @@
     let currentPrice = 0.001000; 
     let activeToken = "";
     
-    // Grafik ve Zaman Değişkenleri
     let chart;
     let candleSeries;
     let volumeSeries;
     let currentCandle;
     let currentVolume = 0;
-    // Çökmeyi önlemek için sanal zaman kullanıyoruz
     let currentTimeStamp = Math.floor(Date.now() / 1000); 
 
     function refreshUI() {
         document.getElementById('cash').innerText = cashBalance.toFixed(2);
         
-        let priceEl = document.getElementById('tokenPrice');
-        priceEl.innerText = currentPrice.toFixed(6);
-        // Fiyata göre renk değiştir
-        priceEl.style.color = currentCandle.close >= currentCandle.open ? 'var(--up-color)' : 'var(--down-color)';
+        let priceSpan = document.getElementById('tokenPrice');
+        let priceContainer = document.getElementById('tokenPriceDisplay');
+        
+        priceSpan.innerText = currentPrice.toFixed(6);
+        
+        if (currentCandle.close >= currentCandle.open) {
+            priceContainer.style.color = 'var(--up-color)';
+        } else {
+            priceContainer.style.color = 'var(--down-color)';
+        }
         
         document.getElementById('tokenBalanceDisplay').innerHTML = `Cüzdan: <span class="highlight">${tokensOwned.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> ${activeToken}`;
     }
@@ -127,9 +135,8 @@
         initTradingViewChart();
         refreshUI();
         
-        // Zamanlayıcılar (Bot işlemleri ve mum kapatma)
-        setInterval(autoMoveMarket, 2000); // Her 2 saniyede bir ufak dalgalanma
-        setInterval(createNewCandle, 5000); // Her 5 saniyede bir yeni mum açılır
+        setInterval(autoMoveMarket, 2000); 
+        setInterval(createNewCandle, 5000); 
     }
 
     function initTradingViewChart() {
@@ -144,20 +151,17 @@
             timeScale: { timeVisible: true, secondsVisible: true },
         });
 
-        // 1. Mum Serisi (Candlestick)
         candleSeries = chart.addCandlestickSeries({
             upColor: '#26a69a', downColor: '#ef5350', borderDownColor: '#ef5350', borderUpColor: '#26a69a', wickDownColor: '#ef5350', wickUpColor: '#26a69a',
         });
 
-        // 2. Hacim Serisi (Volume Histogram)
         volumeSeries = chart.addHistogramSeries({
             color: '#26a69a',
             priceFormat: { type: 'volume' },
             priceScaleId: '', 
-            scaleMargins: { top: 0.8, bottom: 0 }, // Hacmi grafiğin en altına sıkıştırır
+            scaleMargins: { top: 0.8, bottom: 0 }, 
         });
 
-        // Verileri başlat
         currentCandle = { time: currentTimeStamp, open: currentPrice, high: currentPrice, low: currentPrice, close: currentPrice };
         candleSeries.setData([currentCandle]);
         volumeSeries.setData([{ time: currentTimeStamp, value: currentVolume, color: '#26a69a' }]);
@@ -167,27 +171,29 @@
         currentPrice = newPrice;
         currentVolume += addVolume;
         
-        // Mumu güncelle
         currentCandle.close = currentPrice;
         if (currentPrice > currentCandle.high) currentCandle.high = currentPrice;
         if (currentPrice < currentCandle.low) currentCandle.low = currentPrice;
-        candleSeries.update(currentCandle);
         
-        // Hacmi güncelle (Yeşil veya Kırmızı)
-        let vColor = currentCandle.close >= currentCandle.open ? '#26a69a' : '#ef5350';
-        volumeSeries.update({ time: currentTimeStamp, value: currentVolume, color: vColor });
+        // Hata fırlatmayı engellemek için try-catch eklendi
+        try {
+            candleSeries.update(currentCandle);
+            let vColor = currentCandle.close >= currentCandle.open ? '#26a69a' : '#ef5350';
+            volumeSeries.update({ time: currentTimeStamp, value: currentVolume, color: vColor });
+        } catch(e) { console.log("Grafik Güncelleme Bekliyor..."); }
         
         refreshUI();
     }
 
     function createNewCandle() {
-        // Yeni muma geçerken zamanı kesin olarak 5 saniye ileri al (Çökme sorununu çözer)
         currentTimeStamp += 5; 
-        currentVolume = 0; // Yeni mum için hacmi sıfırla
-
+        currentVolume = 0; 
         currentCandle = { time: currentTimeStamp, open: currentPrice, high: currentPrice, low: currentPrice, close: currentPrice };
-        candleSeries.update(currentCandle);
-        volumeSeries.update({ time: currentTimeStamp, value: currentVolume, color: '#26a69a' });
+        
+        try {
+            candleSeries.update(currentCandle);
+            volumeSeries.update({ time: currentTimeStamp, value: currentVolume, color: '#26a69a' });
+        } catch(e) {}
     }
 
     function executeBuy() {
@@ -196,11 +202,10 @@
             cashBalance -= 100;
             tokensOwned += received;
             
-            // Pump etkisi (%3 ile %10 arası sert yükseliş)
-            let newPrice = currentPrice * (1 + (Math.random() * 0.07 + 0.03)); 
-            updatePrice(newPrice, 5000); // 5000 birimlik fake hacim ekle
+            let newPrice = currentPrice * (1 + (Math.random() * 0.08 + 0.04)); 
+            updatePrice(newPrice, 5000); 
         } else {
-            alert("Bakiye yetersiz! Bankayı soymadın sonuçta.");
+            alert("Bakiye yetersiz dostum!");
         }
     }
 
@@ -210,19 +215,17 @@
             cashBalance += cashEarned;
             tokensOwned = 0;
             
-            // Dump etkisi (%5 ile %15 arası sert düşüş)
-            let newPrice = currentPrice * (1 - (Math.random() * 0.10 + 0.05));
+            let newPrice = currentPrice * (1 - (Math.random() * 0.12 + 0.05));
             if(newPrice < 0.000001) newPrice = 0.000001; 
-            updatePrice(newPrice, 7000); // Satış baskısı için daha yüksek hacim çubuğu
+            updatePrice(newPrice, 8000); 
         } else {
-            alert("Satılacak token yok! Önce biraz almalısın.");
+            alert("Önce coin alman lazım ki satabilesin!");
         }
     }
 
     function autoMoveMarket() {
-        // Doğal dalgalanma motoru (Botlar al-sat yapıyor)
-        let volatility = 1 + (Math.random() * 0.016 - 0.008); // %0.8 yukarı veya aşağı
-        let botVolume = Math.floor(Math.random() * 500) + 100; // Ufak bot hacmi
+        let volatility = 1 + (Math.random() * 0.02 - 0.01); 
+        let botVolume = Math.floor(Math.random() * 500) + 100; 
         updatePrice(currentPrice * volatility, botVolume);
     }
 </script>
