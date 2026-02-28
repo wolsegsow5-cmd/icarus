@@ -3,63 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpSim Pro - Bar Grafiği</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>PumpSim Pro - Mum Grafiği</title>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         :root {
-            --primary: #14F195; /* Solana Yeşili */
-            --secondary: #9945FF; /* Solana Moru */
-            --bg: #0b0c10;
-            --panel: #1f2833;
+            --primary: #14F195;
+            --secondary: #9945FF;
+            --bg: #131722; /* TradingView Koyu Arka Plan */
+            --panel: #1e222d;
             --text: #c5c6c7;
-            --up-color: #2ecc71; /* Fiyat Yukarısı */
-            --down-color: #e74c3c; /* Fiyat Aşağısı */
+            --up-color: #26a69a; /* Gerçekçi Yeşil */
+            --down-color: #ef5350; /* Gerçekçi Kırmızı */
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         
-        .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #45a29e; }
-        .logo { font-size: 1.5em; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
-        .wallet { background: #0b0c10; padding: 10px 15px; border-radius: 8px; font-family: monospace; font-size: 1.2em; border: 1px solid var(--primary); color: white; }
+        .header { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; }
+        .logo { font-size: 1.5em; font-weight: bold; color: white; display: flex; align-items: center; gap: 10px; }
+        .logo span { background: var(--primary); color: black; padding: 2px 8px; border-radius: 5px; font-size: 0.8em; }
+        .wallet { background: #131722; padding: 10px 15px; border-radius: 8px; font-family: monospace; font-size: 1.2em; border: 1px solid #2a2e39; color: white; }
         
-        .container { width: 100%; max-width: 800px; background: var(--panel); padding: 30px; border-radius: 16px; box-sizing: border-box; text-align: center; border: 1px solid #2c3e50; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .container { width: 100%; max-width: 900px; background: var(--panel); padding: 20px; border-radius: 12px; box-sizing: border-box; border: 1px solid #2a2e39; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
         /* Kurulum Ekranı */
-        #setupScreen { display: block; }
+        #setupScreen { display: block; text-align: center; padding: 50px 20px; }
         .input-group { margin: 25px 0; }
-        input[type="text"] { width: 75%; padding: 15px; border-radius: 8px; border: 2px solid #45a29e; background: #0b0c10; color: white; font-size: 1.5em; text-align: center; outline: none; text-transform: uppercase; font-weight: bold; }
-        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(20, 241, 149, 0.4); }
-        .btn-launch { background: linear-gradient(45deg, var(--primary), #10c97c); color: #000; font-weight: bold; font-size: 1.3em; padding: 15px 50px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-launch:hover { transform: translateY(-3px); box-shadow: 0 5px 20px var(--primary); }
-        .subtitle { color: #66fcf1; margin-top: -10px; margin-bottom: 20px; font-size: 0.9em; letter-spacing: 1px; opacity: 0.8; }
+        input[type="text"] { width: 70%; padding: 15px; border-radius: 8px; border: 2px solid #2a2e39; background: #131722; color: white; font-size: 1.5em; text-align: center; outline: none; text-transform: uppercase; font-weight: bold; }
+        input[type="text"]:focus { border-color: var(--primary); }
+        .btn-launch { background: var(--primary); color: #000; font-weight: bold; font-size: 1.3em; padding: 15px 50px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-launch:hover { background: #10c97c; transform: translateY(-2px); }
 
         /* Borsa Ekranı */
         #marketScreen { display: none; }
-        .coin-title { font-size: 2.5em; margin-bottom: 5px; font-weight: 900; color: white; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .price-display { font-size: 1.5em; color: var(--primary); margin-bottom: 20px; font-family: monospace; }
+        .market-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
+        .coin-info { text-align: left; }
+        .coin-title { font-size: 2em; font-weight: 900; color: white; }
+        .price-display { font-size: 1.8em; color: var(--up-color); font-family: monospace; font-weight: bold; }
         
-        /* Grafik Konteyneri - Bar grafiği için daha fazla yer */
-        .chart-container { position: relative; height: 300px; width: 100%; }
+        /* Profesyonel Grafik Alanı */
+        #tvchart { width: 100%; height: 400px; background: #131722; border: 1px solid #2a2e39; border-radius: 8px; overflow: hidden; }
 
-        .action-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
-        .btn { flex: 1; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; color: white; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-buy { background: #27ae60; }
-        .btn-buy:hover { background: #2ecc71; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
-        .btn-sell { background: #c0392b; }
-        .btn-sell:hover { background: #e74c3c; box-shadow: 0 0 10px rgba(192, 57, 43, 0.5); }
+        .action-panel { display: flex; gap: 15px; margin-top: 20px; }
+        .trade-box { flex: 1; background: #131722; padding: 20px; border-radius: 8px; border: 1px solid #2a2e39; text-align: center; }
+        .btn { width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; text-transform: uppercase; margin-top: 10px; }
+        .btn-buy { background: var(--up-color); }
+        .btn-buy:hover { background: #33b5a5; }
+        .btn-sell { background: var(--down-color); }
+        .btn-sell:hover { background: #f0625d; }
         
-        .inventory { margin-top: 25px; padding: 20px; background: #0b0c10; border-radius: 8px; border-left: 5px solid var(--secondary); text-align: left; font-size: 1.1em; }
+        .balance-info { font-size: 0.9em; color: #888; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">💊 PumpSim Pro</div>
-        <div class="wallet">Bakiye: <span id="cash" style="color: var(--primary);">2000.00</span> $</div>
+        <div class="logo">💊 PumpSim <span>PRO</span></div>
+        <div class="wallet">USD: <span id="cash" style="color: var(--primary);">2000.00</span> $</div>
     </div>
 
     <div class="container" id="setupScreen">
-        <h2>🚀 Token Fırlatma Paneli</h2>
-        <div class="subtitle">Duckcoin & Puma Test Laboratuvarı</div>
+        <h2 style="color: white; font-size: 2em; margin-bottom: 5px;">🚀 Projeyi Başlat</h2>
+        <p style="color: #888;">Solana ağında lansman simülasyonu</p>
         <div class="input-group">
             <input type="text" id="tokenName" value="PUMA" placeholder="Örn: DUCKCOIN" autocomplete="off" maxlength="10">
         </div>
@@ -67,121 +70,137 @@
     </div>
 
     <div class="container" id="marketScreen">
-        <div class="coin-title" id="marketTokenName">COIN</div>
-        <div class="price-display">Fiyat: $<span id="tokenPrice">0.001000</span></div>
+        <div class="market-header">
+            <div class="coin-info">
+                <div class="coin-title" id="marketTokenName">COIN / USD</div>
+                <div class="balance-info" id="tokenBalanceDisplay">Cüzdan: 0 Adet</div>
+            </div>
+            <div class="price-display">$<span id="tokenPrice">0.001000</span></div>
+        </div>
         
-        <div class="chart-container">
-            <canvas id="marketChart"></canvas>
-        </div>
+        <div id="tvchart"></div>
 
-        <div class="action-buttons">
-            <button class="btn btn-buy" onclick="executeBuy()">AL (100$)</button>
-            <button class="btn btn-sell" onclick="executeSell()">SAT (Tümünü)</button>
-        </div>
-
-        <div class="inventory">
-            Mevcut Cüzdan Durumu:<br>
-            <strong style="color: white; font-size: 1.4em;"><span id="tokenAmount" style="color: var(--secondary);">0</span> Adet</strong>
+        <div class="action-panel">
+            <div class="trade-box">
+                <div class="balance-info">Alınacak Tutar: $100</div>
+                <button class="btn btn-buy" onclick="executeBuy()">AL</button>
+            </div>
+            <div class="trade-box">
+                <div class="balance-info">Tümünü Sat</div>
+                <button class="btn btn-sell" onclick="executeSell()">SAT</button>
+            </div>
         </div>
     </div>
 
 <script>
     let cashBalance = 2000.00;
     let tokensOwned = 0;
-    let currentPrice = 0.001; 
-    let previousPrice = 0.001; // Renklendirme için önceki fiyatı tut
+    let currentPrice = 0.001000; 
     let activeToken = "";
-    let chartObj;
-    let historyX = [0];
-    let historyY = [0.001];
-    let historyColors = ['#14F195']; // Başlangıç rengi
-    let tick = 0;
+    
+    // Grafik Değişkenleri
+    let chart;
+    let candleSeries;
+    let volumeSeries;
+    let currentCandle;
 
     function refreshUI() {
         document.getElementById('cash').innerText = cashBalance.toFixed(2);
-        document.getElementById('tokenPrice').innerText = currentPrice.toFixed(6);
-        document.getElementById('tokenAmount').innerText = Math.floor(tokensOwned).toLocaleString();
+        
+        let priceEl = document.getElementById('tokenPrice');
+        priceEl.innerText = currentPrice.toFixed(6);
+        // Fiyata göre renk değiştir
+        priceEl.style.color = currentCandle && currentCandle.close >= currentCandle.open ? 'var(--up-color)' : 'var(--down-color)';
+        
+        document.getElementById('tokenBalanceDisplay').innerText = "Cüzdan: " + Math.floor(tokensOwned).toLocaleString() + " " + activeToken;
     }
 
     function startMarket() {
         const inputVal = document.getElementById('tokenName').value.trim();
         activeToken = inputVal === "" ? "TOKEN" : inputVal.toUpperCase();
         
-        document.getElementById('marketTokenName').innerText = "$" + activeToken;
+        document.getElementById('marketTokenName').innerText = activeToken + " / USD";
         document.getElementById('setupScreen').style.display = 'none';
         document.getElementById('marketScreen').style.display = 'block';
 
-        buildChart();
+        initTradingViewChart();
         refreshUI();
-        setInterval(autoMoveMarket, 2500);
+        
+        // Her 2 saniyede bir piyasa hareket etsin
+        setInterval(autoMoveMarket, 2000);
+        // Her 5 saniyede bir yeni mum (candle) oluştur
+        setInterval(createNewCandle, 5000);
     }
 
-    function buildChart() {
-        const ctx = document.getElementById('marketChart').getContext('2d');
-        chartObj = new Chart(ctx, {
-            type: 'bar', // DEĞİŞİKLİK: 'line' yerine 'bar'
-            data: {
-                labels: historyX,
-                datasets: [{
-                    label: 'Fiyat',
-                    data: historyY,
-                    // DEĞİŞİKLİK: Dinamik renklendirme dizisi
-                    backgroundColor: historyColors, 
-                    borderColor: '#fff', // Barların etrafında ince beyaz çizgi
-                    borderWidth: 1,
-                    borderRadius: 4, // Barların köşelerini hafifçe yuvarlat
-                    barPercentage: 0.8, // Barlar arası boşluğu ayarla
-                    categoryPercentage: 0.9
-                }]
+    function initTradingViewChart() {
+        const chartContainer = document.getElementById('tvchart');
+        
+        chart = LightweightCharts.createChart(chartContainer, {
+            width: chartContainer.clientWidth,
+            height: 400,
+            layout: {
+                background: { type: 'solid', color: '#131722' },
+                textColor: '#d1d4dc',
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // Konteyner boyutuna uy
-                scales: { 
-                    y: { 
-                        beginAtZero: false, 
-                        grid: { color: '#1f2833' },
-                        ticks: { color: '#c5c6c7' }
-                    },
-                    x: { 
-                        display: false 
-                    } 
-                },
-                animation: { duration: 150 },
-                plugins: { 
-                    legend: { display: false },
-                    tooltip: { enabled: true } // Bar üzerine gelince fiyatı göster
-                }
-            }
+            grid: {
+                vertLines: { color: '#2a2e39' },
+                horzLines: { color: '#2a2e39' },
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+            },
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: false,
+            },
         });
+
+        // Mum Serisi (Candlestick)
+        candleSeries = chart.addCandlestickSeries({
+            upColor: '#26a69a',
+            downColor: '#ef5350',
+            borderDownColor: '#ef5350',
+            borderUpColor: '#26a69a',
+            wickDownColor: '#ef5350',
+            wickUpColor: '#26a69a',
+        });
+
+        // Başlangıç Mumu
+        currentCandle = {
+            time: Math.floor(Date.now() / 1000),
+            open: currentPrice,
+            high: currentPrice,
+            low: currentPrice,
+            close: currentPrice
+        };
+        candleSeries.update(currentCandle);
     }
 
-    function addChartTick() {
-        tick++;
-        historyX.push(tick);
-        historyY.push(currentPrice);
+    function updatePrice(newPrice) {
+        currentPrice = newPrice;
         
-        // Fiyat yönüne göre renk belirle
-        if (currentPrice > previousPrice) {
-            historyColors.push('#2ecc71'); // Yeşil (Yükseliş)
-        } else if (currentPrice < previousPrice) {
-            historyColors.push('#e74c3c'); // Kırmızı (Düşüş)
-        } else {
-            historyColors.push('#c5c6c7'); // Gri (Nötr, fiyat aynı)
-        }
+        // Mevcut mumu (candle) güncelle
+        currentCandle.close = currentPrice;
+        if (currentPrice > currentCandle.high) currentCandle.high = currentPrice;
+        if (currentPrice < currentCandle.low) currentCandle.low = currentPrice;
         
-        // Grafikteki bar sayısını sınırla (scrolling etkisi)
-        if(historyX.length > 30) { 
-            historyX.shift();
-            historyY.shift();
-            historyColors.shift(); // Renk dizisini de kaydır
-        }
-        
-        previousPrice = currentPrice; // Bir sonraki adım için fiyatı güncelle
-        
-        // Grafiği ve UI'ı güncelle
-        chartObj.update();
+        candleSeries.update(currentCandle);
         refreshUI();
+    }
+
+    function createNewCandle() {
+        // Zamanı ileri al ve yeni mumu aç
+        let nextTime = Math.floor(Date.now() / 1000);
+        if (nextTime <= currentCandle.time) nextTime = currentCandle.time + 1; // Çakışmayı önle
+
+        currentCandle = {
+            time: nextTime,
+            open: currentPrice,
+            high: currentPrice,
+            low: currentPrice,
+            close: currentPrice
+        };
+        candleSeries.update(currentCandle);
     }
 
     function executeBuy() {
@@ -190,9 +209,9 @@
             cashBalance -= 100;
             tokensOwned += received;
             
-            // Pump etkisi: Hacimli alım fiyatı zıplatır (%3 ile %15 arası)
-            currentPrice *= (1 + (Math.random() * 0.12 + 0.03)); 
-            addChartTick();
+            // Pump etkisi (%2 ile %8 arası sert yükseliş)
+            let newPrice = currentPrice * (1 + (Math.random() * 0.06 + 0.02)); 
+            updatePrice(newPrice);
         } else {
             alert("Bakiye yetersiz!");
         }
@@ -204,20 +223,19 @@
             cashBalance += cashEarned;
             tokensOwned = 0;
             
-            // Dump etkisi: Tek seferde büyük satış fiyatı ezer (%5 ile %23 arası düşüş)
-            currentPrice *= (1 - (Math.random() * 0.18 + 0.05));
-            if(currentPrice < 0.000001) currentPrice = 0.000001; // Sıfırlanmasın
-            
-            addChartTick();
+            // Dump etkisi (%3 ile %12 arası sert düşüş)
+            let newPrice = currentPrice * (1 - (Math.random() * 0.09 + 0.03));
+            if(newPrice < 0.000001) newPrice = 0.000001; 
+            updatePrice(newPrice);
         } else {
             alert("Satılacak token yok!");
         }
     }
 
     function autoMoveMarket() {
-        // Doğal dalgalanma (Bot alım satımları %2.5 yukarı / %2.5 aşağı)
-        currentPrice *= 1 + (Math.random() * 0.05 - 0.025);
-        addChartTick();
+        // Doğal dalgalanma motoru (Botlar al-sat yapıyor hissi)
+        let volatility = 1 + (Math.random() * 0.02 - 0.01); // %1 yukarı veya aşağı
+        updatePrice(currentPrice * volatility);
     }
 </script>
 
