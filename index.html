@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PumpSim - Solana Meme Coin Platformu</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --solana-green: #14F195;
+            --solana-purple: #9945FF;
+            --bg-dark: #0f1014;
+            --panel-bg: #1a1b23;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--panel-bg); border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #333; }
+        .logo { font-size: 1.5em; font-weight: 900; background: linear-gradient(90deg, var(--solana-green), var(--solana-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .wallet { background: #2a2b36; padding: 8px 15px; border-radius: 20px; font-family: monospace; font-size: 1.1em; border: 1px solid var(--solana-purple); }
+        
+        .container { width: 100%; max-width: 800px; background: var(--panel-bg); padding: 30px; border-radius: 16px; box-sizing: border-box; text-align: center; border: 1px solid #333; }
+        
+        /* Oluşturma Ekranı */
+        #createScreen { display: block; }
+        .input-group { margin: 20px 0; }
+        input[type="text"], input[type="number"] { width: 80%; padding: 15px; border-radius: 8px; border: 1px solid #444; background: #0f1014; color: white; font-size: 1.2em; text-align: center; outline: none; }
+        input[type="text"]:focus { border-color: var(--solana-green); }
+        .btn-create { background: var(--solana-green); color: #000; font-weight: bold; font-size: 1.2em; padding: 15px 40px; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn-create:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--solana-green); }
+
+        /* Ticaret Ekranı */
+        #tradeScreen { display: none; }
+        .coin-header { font-size: 2em; margin-bottom: 5px; font-weight: bold; color: var(--solana-purple); }
+        .market-cap { font-size: 1.2em; color: #aaa; margin-bottom: 20px; }
+        
+        .action-panel { display: flex; justify-content: space-around; background: #2a2b36; padding: 20px; border-radius: 12px; margin-top: 20px; }
+        .trade-btn { width: 45%; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .btn-buy { background: var(--solana-green); color: #000; }
+        .btn-buy:hover { background: #10c97c; box-shadow: 0 0 10px var(--solana-green); }
+        .btn-sell { background: #ff4747; color: #fff; }
+        .btn-sell:hover { background: #e03131; box-shadow: 0 0 10px #ff4747; }
+        
+        .portfolio { margin-top: 20px; padding: 15px; background: #0f1014; border-radius: 8px; border: 1px dashed #555; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">💊 PumpSim (Solana)</div>
+        <div class="wallet">Bakiye: <span id="usdBalance" style="color: var(--solana-green);">2000.00</span> $</div>
+    </div>
+
+    <div class="container" id="createScreen">
+        <h2>🚀 Yeni Meme Coin Fırlat</h2>
+        <p>Solana ağında kendi coin'ini oluştur ve ticarete başla!</p>
+        <div class="input-group">
+            <input type="text" id="coinNameInput" placeholder="Coin Adı (Örn: KediWifHat)" autocomplete="off">
+        </div>
+        <button class="btn-create" onclick="launchCoin()">Coin'i Piyasaya Sür</button>
+    </div>
+
+    <div class="container" id="tradeScreen">
+        <div class="coin-header" id="displayCoinName">COIN_ADI</div>
+        <div class="market-cap">Fiyat: $<span id="currentPrice">0.001000</span></div>
+        
+        <canvas id="pumpChart" width="400" height="200"></canvas>
+
+        <div class="action-panel">
+            <button class="trade-btn btn-buy" onclick="buyMeme()">AL (100$)</button>
+            <button class="trade-btn btn-sell" onclick="sellMeme()">SAT (Tümünü)</button>
+        </div>
+
+        <div class="portfolio">
+            <strong>Senin Cüzdanın:</strong><br>
+            Sahip Olduğun: <span id="ownedTokens" style="color: var(--solana-purple); font-weight: bold;">0</span> Adet
+        </div>
+    </div>
+
+<script>
+    // Başlangıç Değerleri
+    let balanceUSD = 2000.00;
+    let tokenBalance = 0;
+    let currentPrice = 0.001; // Meme coin başlangıç fiyatı çok düşük olur
+    let coinName = "";
+    let timeLabels = [];
+    let priceData = [];
+    let chartInstance;
+    let timeStep = 0;
+
+    // Arayüzü Güncelleme
+    function updateWalletUI() {
+        document.getElementById('usdBalance').innerText = balanceUSD.toFixed(2);
+        document.getElementById('currentPrice').innerText = currentPrice.toFixed(6);
+        document.getElementById('ownedTokens').innerText = Math.floor(tokenBalance);
+    }
+
+    // Coin'i Piyasaya Sürme (Oluşturma) İşlemi
+    function launchCoin() {
+        const nameInput = document.getElementById('coinNameInput').value;
+        if (nameInput.trim() === "") {
+            alert("Lütfen havalı bir coin adı girin!");
+            return;
+        }
+        
+        coinName = nameInput.toUpperCase();
+        document.getElementById('displayCoinName').innerText = "$" + coinName;
+        
+        // Ekranları değiştir
+        document.getElementById('createScreen').style.display = 'none';
+        document.getElementById('tradeScreen').style.display = 'block';
+
+        // Grafiği Başlat
+        initChart();
+        updateWalletUI();
+        
+        // Grafiği canlı tutmak için hafif dalgalanma motoru
+        setInterval(randomFluctuation, 2000);
+    }
+
+    // Grafik Ayarları
+    function initChart() {
+        const ctx = document.getElementById('pumpChart').getContext('2d');
+        timeLabels.push(timeStep);
+        priceData.push(currentPrice);
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: 'Fiyat ($)',
+                    data: priceData,
+                    borderColor: '#14F195',
+                    backgroundColor: 'rgba(20, 241, 149, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                scales: { 
+                    y: { beginAtZero: true, grid: { color: '#333' } },
+                    x: { display: false } // Zaman eksenini gizle daha temiz dursun
+                },
+                animation: { duration: 300 },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // Grafiğe yeni veri ekleme
+    function updateChartData() {
+        timeStep++;
+        timeLabels.push(timeStep);
+        priceData.push(currentPrice);
+        
+        if(timeLabels.length > 30) {
+            timeLabels.shift();
+            priceData.shift();
+        }
+        chartInstance.update();
+        updateWalletUI();
+    }
+
+    // Satın Alma (PUMP Etkisi)
+    function buyMeme() {
+        let buyAmountUSD = 100; // Her tıklamada 100 dolarlık alım yapar
+        
+        if (balanceUSD >= buyAmountUSD) {
+            // Kaç adet token alınabiliyor hesapla
+            let tokensToBuy = buyAmountUSD / currentPrice;
+            
+            balanceUSD -= buyAmountUSD;
+            tokenBalance += tokensToBuy;
+            
+            // Fiyatı yapay olarak fırlat (Pump mekaniği: Her alımda %5 ile %15 arası artar)
+            let pumpMultiplier = 1 + (Math.random() * 0.10 + 0.05); 
+            currentPrice = currentPrice * pumpMultiplier;
+            
+            updateChartData();
+        } else {
+            alert("Bakiyen yetersiz! Solana (veya sahte USD) bitti.");
+        }
+    }
+
+    // Satış Yapma (DUMP Etkisi)
+    function sellMeme() {
+        if (tokenBalance > 0) {
+            // Eldeki tüm tokenları güncel fiyattan sat
+            let revenueUSD = tokenBalance * currentPrice;
+            
+            balanceUSD += revenueUSD;
+            tokenBalance = 0;
+            
+            // Fiyatı yapay olarak düşür (Dump mekaniği: Büyük satış fiyatı %10 ile %25 arası çakar)
+            let dumpMultiplier = 1 - (Math.random() * 0.15 + 0.10);
+            currentPrice = currentPrice * dumpMultiplier;
+            if(currentPrice < 0.000001) currentPrice = 0.000001; // Sıfırlanmasın
+            
+            updateChartData();
+        } else {
+            alert("Satacak hiç " + coinName + " kalmadı!");
+        }
+    }
+
+    // Kendi kendine küçük piyasa hareketleri
+    function randomFluctuation() {
+        // %2 yukarı veya %2 aşağı
+        let change = 1 + (Math.random() * 0.04 - 0.02);
+        currentPrice = currentPrice * change;
+        updateChartData();
+    }
+</script>
+
+</body>
+</html>
