@@ -3,212 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpSim - Solana Meme Coin Platformu</title>
+    <title>PumpSim - Lansman Simülasyonu</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --solana-green: #14F195;
-            --solana-purple: #9945FF;
-            --bg-dark: #0f1014;
-            --panel-bg: #1a1b23;
+            --primary: #14F195;
+            --secondary: #9945FF;
+            --bg: #0b0c10;
+            --panel: #1f2833;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--panel-bg); border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #333; }
-        .logo { font-size: 1.5em; font-weight: 900; background: linear-gradient(90deg, var(--solana-green), var(--solana-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .wallet { background: #2a2b36; padding: 8px 15px; border-radius: 20px; font-family: monospace; font-size: 1.1em; border: 1px solid var(--solana-purple); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: #c5c6c7; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #45a29e; }
+        .logo { font-size: 1.5em; font-weight: bold; color: var(--primary); }
+        .wallet { background: #0b0c10; padding: 10px 15px; border-radius: 8px; font-family: monospace; font-size: 1.2em; border: 1px solid var(--primary); color: white; }
         
-        .container { width: 100%; max-width: 800px; background: var(--panel-bg); padding: 30px; border-radius: 16px; box-sizing: border-box; text-align: center; border: 1px solid #333; }
+        .container { width: 100%; max-width: 800px; background: var(--panel); padding: 30px; border-radius: 16px; box-sizing: border-box; text-align: center; border: 1px solid #2c3e50; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* Oluşturma Ekranı */
-        #createScreen { display: block; }
-        .input-group { margin: 20px 0; }
-        input[type="text"], input[type="number"] { width: 80%; padding: 15px; border-radius: 8px; border: 1px solid #444; background: #0f1014; color: white; font-size: 1.2em; text-align: center; outline: none; }
-        input[type="text"]:focus { border-color: var(--solana-green); }
-        .btn-create { background: var(--solana-green); color: #000; font-weight: bold; font-size: 1.2em; padding: 15px 40px; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        .btn-create:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--solana-green); }
+        /* Kurulum Ekranı */
+        #setupScreen { display: block; }
+        .input-group { margin: 25px 0; }
+        input[type="text"] { width: 70%; padding: 15px; border-radius: 8px; border: 2px solid #45a29e; background: #0b0c10; color: white; font-size: 1.5em; text-align: center; outline: none; text-transform: uppercase; font-weight: bold; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .btn-launch { background: linear-gradient(45deg, var(--primary), #10c97c); color: #000; font-weight: bold; font-size: 1.3em; padding: 15px 50px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; }
+        .btn-launch:hover { transform: translateY(-3px); box-shadow: 0 5px 20px var(--primary); }
+        .subtitle { color: #66fcf1; margin-top: -10px; margin-bottom: 20px; font-size: 0.9em; letter-spacing: 1px; }
 
-        /* Ticaret Ekranı */
-        #tradeScreen { display: none; }
-        .coin-header { font-size: 2em; margin-bottom: 5px; font-weight: bold; color: var(--solana-purple); }
-        .market-cap { font-size: 1.2em; color: #aaa; margin-bottom: 20px; }
+        /* Borsa Ekranı */
+        #marketScreen { display: none; }
+        .coin-title { font-size: 2.5em; margin-bottom: 5px; font-weight: 900; color: white; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .price-display { font-size: 1.5em; color: var(--primary); margin-bottom: 20px; font-family: monospace; }
         
-        .action-panel { display: flex; justify-content: space-around; background: #2a2b36; padding: 20px; border-radius: 12px; margin-top: 20px; }
-        .trade-btn { width: 45%; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .btn-buy { background: var(--solana-green); color: #000; }
-        .btn-buy:hover { background: #10c97c; box-shadow: 0 0 10px var(--solana-green); }
-        .btn-sell { background: #ff4747; color: #fff; }
-        .btn-sell:hover { background: #e03131; box-shadow: 0 0 10px #ff4747; }
+        .action-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
+        .btn { flex: 1; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; color: white; }
+        .btn-buy { background: #27ae60; }
+        .btn-buy:hover { background: #2ecc71; }
+        .btn-sell { background: #c0392b; }
+        .btn-sell:hover { background: #e74c3c; }
         
-        .portfolio { margin-top: 20px; padding: 15px; background: #0f1014; border-radius: 8px; border: 1px dashed #555; text-align: left; }
+        .inventory { margin-top: 25px; padding: 20px; background: #0b0c10; border-radius: 8px; border-left: 5px solid var(--secondary); text-align: left; font-size: 1.1em; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">💊 PumpSim (Solana)</div>
-        <div class="wallet">Bakiye: <span id="usdBalance" style="color: var(--solana-green);">2000.00</span> $</div>
+        <div class="logo">💊 PumpSim Pro</div>
+        <div class="wallet">Bakiye: <span id="cash" style="color: var(--primary);">2000.00</span> $</div>
     </div>
 
-    <div class="container" id="createScreen">
-        <h2>🚀 Yeni Meme Coin Fırlat</h2>
-        <p>Solana ağında kendi coin'ini oluştur ve ticarete başla!</p>
+    <div class="container" id="setupScreen">
+        <h2>🚀 Token Fırlatma Paneli</h2>
+        <div class="subtitle">12 Mart Lansman Simülasyonu</div>
         <div class="input-group">
-            <input type="text" id="coinNameInput" placeholder="Coin Adı (Örn: KediWifHat)" autocomplete="off">
+            <input type="text" id="tokenName" value="PUMA" placeholder="Örn: DUCKCOIN" autocomplete="off">
         </div>
-        <button class="btn-create" onclick="launchCoin()">Coin'i Piyasaya Sür</button>
+        <button class="btn-launch" onclick="startMarket()">Piyasaya Sür</button>
     </div>
 
-    <div class="container" id="tradeScreen">
-        <div class="coin-header" id="displayCoinName">COIN_ADI</div>
-        <div class="market-cap">Fiyat: $<span id="currentPrice">0.001000</span></div>
+    <div class="container" id="marketScreen">
+        <div class="coin-title" id="marketTokenName">COIN</div>
+        <div class="price-display">Fiyat: $<span id="tokenPrice">0.001000</span></div>
         
-        <canvas id="pumpChart" width="400" height="200"></canvas>
+        <canvas id="marketChart" width="400" height="200"></canvas>
 
-        <div class="action-panel">
-            <button class="trade-btn btn-buy" onclick="buyMeme()">AL (100$)</button>
-            <button class="trade-btn btn-sell" onclick="sellMeme()">SAT (Tümünü)</button>
+        <div class="action-buttons">
+            <button class="btn btn-buy" onclick="executeBuy()">AL (100$)</button>
+            <button class="btn btn-sell" onclick="executeSell()">SAT (Tümünü)</button>
         </div>
 
-        <div class="portfolio">
-            <strong>Senin Cüzdanın:</strong><br>
-            Sahip Olduğun: <span id="ownedTokens" style="color: var(--solana-purple); font-weight: bold;">0</span> Adet
+        <div class="inventory">
+            Mevcut Cüzdan Durumu:<br>
+            <strong style="color: white; font-size: 1.4em;"><span id="tokenAmount" style="color: var(--secondary);">0</span> Adet</strong>
         </div>
     </div>
 
 <script>
-    // Başlangıç Değerleri
-    let balanceUSD = 2000.00;
-    let tokenBalance = 0;
-    let currentPrice = 0.001; // Meme coin başlangıç fiyatı çok düşük olur
-    let coinName = "";
-    let timeLabels = [];
-    let priceData = [];
-    let chartInstance;
-    let timeStep = 0;
+    let cashBalance = 2000.00;
+    let tokensOwned = 0;
+    let currentPrice = 0.001; 
+    let activeToken = "";
+    let chartObj;
+    let historyX = [0];
+    let historyY = [0.001];
+    let tick = 0;
 
-    // Arayüzü Güncelleme
-    function updateWalletUI() {
-        document.getElementById('usdBalance').innerText = balanceUSD.toFixed(2);
-        document.getElementById('currentPrice').innerText = currentPrice.toFixed(6);
-        document.getElementById('ownedTokens').innerText = Math.floor(tokenBalance);
+    function refreshUI() {
+        document.getElementById('cash').innerText = cashBalance.toFixed(2);
+        document.getElementById('tokenPrice').innerText = currentPrice.toFixed(6);
+        document.getElementById('tokenAmount').innerText = Math.floor(tokensOwned).toLocaleString();
     }
 
-    // Coin'i Piyasaya Sürme (Oluşturma) İşlemi
-    function launchCoin() {
-        const nameInput = document.getElementById('coinNameInput').value;
-        if (nameInput.trim() === "") {
-            alert("Lütfen havalı bir coin adı girin!");
-            return;
-        }
+    function startMarket() {
+        const inputVal = document.getElementById('tokenName').value.trim();
+        activeToken = inputVal === "" ? "TOKEN" : inputVal.toUpperCase();
         
-        coinName = nameInput.toUpperCase();
-        document.getElementById('displayCoinName').innerText = "$" + coinName;
-        
-        // Ekranları değiştir
-        document.getElementById('createScreen').style.display = 'none';
-        document.getElementById('tradeScreen').style.display = 'block';
+        document.getElementById('marketTokenName').innerText = "$" + activeToken;
+        document.getElementById('setupScreen').style.display = 'none';
+        document.getElementById('marketScreen').style.display = 'block';
 
-        // Grafiği Başlat
-        initChart();
-        updateWalletUI();
-        
-        // Grafiği canlı tutmak için hafif dalgalanma motoru
-        setInterval(randomFluctuation, 2000);
+        buildChart();
+        refreshUI();
+        setInterval(autoMoveMarket, 2500);
     }
 
-    // Grafik Ayarları
-    function initChart() {
-        const ctx = document.getElementById('pumpChart').getContext('2d');
-        timeLabels.push(timeStep);
-        priceData.push(currentPrice);
-
-        chartInstance = new Chart(ctx, {
+    function buildChart() {
+        const ctx = document.getElementById('marketChart').getContext('2d');
+        chartObj = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: timeLabels,
+                labels: historyX,
                 datasets: [{
-                    label: 'Fiyat ($)',
-                    data: priceData,
+                    label: 'Fiyat',
+                    data: historyY,
                     borderColor: '#14F195',
-                    backgroundColor: 'rgba(20, 241, 149, 0.1)',
-                    borderWidth: 3,
+                    backgroundColor: 'rgba(20, 241, 149, 0.05)',
+                    borderWidth: 2,
                     fill: true,
-                    tension: 0.2,
+                    tension: 0.3,
                     pointRadius: 0
                 }]
             },
             options: {
                 scales: { 
-                    y: { beginAtZero: true, grid: { color: '#333' } },
-                    x: { display: false } // Zaman eksenini gizle daha temiz dursun
+                    y: { beginAtZero: false, grid: { color: '#1f2833' } },
+                    x: { display: false } 
                 },
-                animation: { duration: 300 },
+                animation: { duration: 200 },
                 plugins: { legend: { display: false } }
             }
         });
     }
 
-    // Grafiğe yeni veri ekleme
-    function updateChartData() {
-        timeStep++;
-        timeLabels.push(timeStep);
-        priceData.push(currentPrice);
+    function addChartTick() {
+        tick++;
+        historyX.push(tick);
+        historyY.push(currentPrice);
         
-        if(timeLabels.length > 30) {
-            timeLabels.shift();
-            priceData.shift();
+        if(historyX.length > 25) {
+            historyX.shift();
+            historyY.shift();
         }
-        chartInstance.update();
-        updateWalletUI();
+        chartObj.update();
+        refreshUI();
     }
 
-    // Satın Alma (PUMP Etkisi)
-    function buyMeme() {
-        let buyAmountUSD = 100; // Her tıklamada 100 dolarlık alım yapar
-        
-        if (balanceUSD >= buyAmountUSD) {
-            // Kaç adet token alınabiliyor hesapla
-            let tokensToBuy = buyAmountUSD / currentPrice;
+    function executeBuy() {
+        if (cashBalance >= 100) {
+            let received = 100 / currentPrice;
+            cashBalance -= 100;
+            tokensOwned += received;
             
-            balanceUSD -= buyAmountUSD;
-            tokenBalance += tokensToBuy;
-            
-            // Fiyatı yapay olarak fırlat (Pump mekaniği: Her alımda %5 ile %15 arası artar)
-            let pumpMultiplier = 1 + (Math.random() * 0.10 + 0.05); 
-            currentPrice = currentPrice * pumpMultiplier;
-            
-            updateChartData();
+            // Pump etkisi: Hacimli alım fiyatı zıplatır
+            currentPrice *= (1 + (Math.random() * 0.12 + 0.03)); 
+            addChartTick();
         } else {
-            alert("Bakiyen yetersiz! Solana (veya sahte USD) bitti.");
+            alert("Bakiye yetersiz!");
         }
     }
 
-    // Satış Yapma (DUMP Etkisi)
-    function sellMeme() {
-        if (tokenBalance > 0) {
-            // Eldeki tüm tokenları güncel fiyattan sat
-            let revenueUSD = tokenBalance * currentPrice;
+    function executeSell() {
+        if (tokensOwned > 0) {
+            let cashEarned = tokensOwned * currentPrice;
+            cashBalance += cashEarned;
+            tokensOwned = 0;
             
-            balanceUSD += revenueUSD;
-            tokenBalance = 0;
+            // Dump etkisi: Tek seferde büyük satış fiyatı ezer
+            currentPrice *= (1 - (Math.random() * 0.18 + 0.05));
+            if(currentPrice < 0.000001) currentPrice = 0.000001; 
             
-            // Fiyatı yapay olarak düşür (Dump mekaniği: Büyük satış fiyatı %10 ile %25 arası çakar)
-            let dumpMultiplier = 1 - (Math.random() * 0.15 + 0.10);
-            currentPrice = currentPrice * dumpMultiplier;
-            if(currentPrice < 0.000001) currentPrice = 0.000001; // Sıfırlanmasın
-            
-            updateChartData();
+            addChartTick();
         } else {
-            alert("Satacak hiç " + coinName + " kalmadı!");
+            alert("Satılacak token yok!");
         }
     }
 
-    // Kendi kendine küçük piyasa hareketleri
-    function randomFluctuation() {
-        // %2 yukarı veya %2 aşağı
-        let change = 1 + (Math.random() * 0.04 - 0.02);
-        currentPrice = currentPrice * change;
-        updateChartData();
+    function autoMoveMarket() {
+        // Doğal dalgalanma (Bot alım satımları)
+        currentPrice *= 1 + (Math.random() * 0.05 - 0.025);
+        addChartTick();
     }
 </script>
 
