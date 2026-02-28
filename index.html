@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpSim - Lansman Simülasyonu</title>
+    <title>PumpSim Pro - Bar Grafiği</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #14F195;
-            --secondary: #9945FF;
+            --primary: #14F195; /* Solana Yeşili */
+            --secondary: #9945FF; /* Solana Moru */
             --bg: #0b0c10;
             --panel: #1f2833;
+            --text: #c5c6c7;
+            --up-color: #2ecc71; /* Fiyat Yukarısı */
+            --down-color: #e74c3c; /* Fiyat Aşağısı */
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: #c5c6c7; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
         .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #45a29e; }
-        .logo { font-size: 1.5em; font-weight: bold; color: var(--primary); }
+        .logo { font-size: 1.5em; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
         .wallet { background: #0b0c10; padding: 10px 15px; border-radius: 8px; font-family: monospace; font-size: 1.2em; border: 1px solid var(--primary); color: white; }
         
         .container { width: 100%; max-width: 800px; background: var(--panel); padding: 30px; border-radius: 16px; box-sizing: border-box; text-align: center; border: 1px solid #2c3e50; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -22,23 +26,26 @@
         /* Kurulum Ekranı */
         #setupScreen { display: block; }
         .input-group { margin: 25px 0; }
-        input[type="text"] { width: 70%; padding: 15px; border-radius: 8px; border: 2px solid #45a29e; background: #0b0c10; color: white; font-size: 1.5em; text-align: center; outline: none; text-transform: uppercase; font-weight: bold; }
-        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        .btn-launch { background: linear-gradient(45deg, var(--primary), #10c97c); color: #000; font-weight: bold; font-size: 1.3em; padding: 15px 50px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; }
+        input[type="text"] { width: 75%; padding: 15px; border-radius: 8px; border: 2px solid #45a29e; background: #0b0c10; color: white; font-size: 1.5em; text-align: center; outline: none; text-transform: uppercase; font-weight: bold; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(20, 241, 149, 0.4); }
+        .btn-launch { background: linear-gradient(45deg, var(--primary), #10c97c); color: #000; font-weight: bold; font-size: 1.3em; padding: 15px 50px; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .btn-launch:hover { transform: translateY(-3px); box-shadow: 0 5px 20px var(--primary); }
-        .subtitle { color: #66fcf1; margin-top: -10px; margin-bottom: 20px; font-size: 0.9em; letter-spacing: 1px; }
+        .subtitle { color: #66fcf1; margin-top: -10px; margin-bottom: 20px; font-size: 0.9em; letter-spacing: 1px; opacity: 0.8; }
 
         /* Borsa Ekranı */
         #marketScreen { display: none; }
         .coin-title { font-size: 2.5em; margin-bottom: 5px; font-weight: 900; color: white; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
         .price-display { font-size: 1.5em; color: var(--primary); margin-bottom: 20px; font-family: monospace; }
         
+        /* Grafik Konteyneri - Bar grafiği için daha fazla yer */
+        .chart-container { position: relative; height: 300px; width: 100%; }
+
         .action-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
-        .btn { flex: 1; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; color: white; }
+        .btn { flex: 1; padding: 15px; font-size: 1.2em; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; color: white; text-transform: uppercase; letter-spacing: 1px; }
         .btn-buy { background: #27ae60; }
-        .btn-buy:hover { background: #2ecc71; }
+        .btn-buy:hover { background: #2ecc71; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
         .btn-sell { background: #c0392b; }
-        .btn-sell:hover { background: #e74c3c; }
+        .btn-sell:hover { background: #e74c3c; box-shadow: 0 0 10px rgba(192, 57, 43, 0.5); }
         
         .inventory { margin-top: 25px; padding: 20px; background: #0b0c10; border-radius: 8px; border-left: 5px solid var(--secondary); text-align: left; font-size: 1.1em; }
     </style>
@@ -52,9 +59,9 @@
 
     <div class="container" id="setupScreen">
         <h2>🚀 Token Fırlatma Paneli</h2>
-        <div class="subtitle">12 Mart Lansman Simülasyonu</div>
+        <div class="subtitle">Duckcoin & Puma Test Laboratuvarı</div>
         <div class="input-group">
-            <input type="text" id="tokenName" value="PUMA" placeholder="Örn: DUCKCOIN" autocomplete="off">
+            <input type="text" id="tokenName" value="PUMA" placeholder="Örn: DUCKCOIN" autocomplete="off" maxlength="10">
         </div>
         <button class="btn-launch" onclick="startMarket()">Piyasaya Sür</button>
     </div>
@@ -63,7 +70,9 @@
         <div class="coin-title" id="marketTokenName">COIN</div>
         <div class="price-display">Fiyat: $<span id="tokenPrice">0.001000</span></div>
         
-        <canvas id="marketChart" width="400" height="200"></canvas>
+        <div class="chart-container">
+            <canvas id="marketChart"></canvas>
+        </div>
 
         <div class="action-buttons">
             <button class="btn btn-buy" onclick="executeBuy()">AL (100$)</button>
@@ -80,10 +89,12 @@
     let cashBalance = 2000.00;
     let tokensOwned = 0;
     let currentPrice = 0.001; 
+    let previousPrice = 0.001; // Renklendirme için önceki fiyatı tut
     let activeToken = "";
     let chartObj;
     let historyX = [0];
     let historyY = [0.001];
+    let historyColors = ['#14F195']; // Başlangıç rengi
     let tick = 0;
 
     function refreshUI() {
@@ -108,27 +119,39 @@
     function buildChart() {
         const ctx = document.getElementById('marketChart').getContext('2d');
         chartObj = new Chart(ctx, {
-            type: 'line',
+            type: 'bar', // DEĞİŞİKLİK: 'line' yerine 'bar'
             data: {
                 labels: historyX,
                 datasets: [{
                     label: 'Fiyat',
                     data: historyY,
-                    borderColor: '#14F195',
-                    backgroundColor: 'rgba(20, 241, 149, 0.05)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 0
+                    // DEĞİŞİKLİK: Dinamik renklendirme dizisi
+                    backgroundColor: historyColors, 
+                    borderColor: '#fff', // Barların etrafında ince beyaz çizgi
+                    borderWidth: 1,
+                    borderRadius: 4, // Barların köşelerini hafifçe yuvarlat
+                    barPercentage: 0.8, // Barlar arası boşluğu ayarla
+                    categoryPercentage: 0.9
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false, // Konteyner boyutuna uy
                 scales: { 
-                    y: { beginAtZero: false, grid: { color: '#1f2833' } },
-                    x: { display: false } 
+                    y: { 
+                        beginAtZero: false, 
+                        grid: { color: '#1f2833' },
+                        ticks: { color: '#c5c6c7' }
+                    },
+                    x: { 
+                        display: false 
+                    } 
                 },
-                animation: { duration: 200 },
-                plugins: { legend: { display: false } }
+                animation: { duration: 150 },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: { enabled: true } // Bar üzerine gelince fiyatı göster
+                }
             }
         });
     }
@@ -138,10 +161,25 @@
         historyX.push(tick);
         historyY.push(currentPrice);
         
-        if(historyX.length > 25) {
+        // Fiyat yönüne göre renk belirle
+        if (currentPrice > previousPrice) {
+            historyColors.push('#2ecc71'); // Yeşil (Yükseliş)
+        } else if (currentPrice < previousPrice) {
+            historyColors.push('#e74c3c'); // Kırmızı (Düşüş)
+        } else {
+            historyColors.push('#c5c6c7'); // Gri (Nötr, fiyat aynı)
+        }
+        
+        // Grafikteki bar sayısını sınırla (scrolling etkisi)
+        if(historyX.length > 30) { 
             historyX.shift();
             historyY.shift();
+            historyColors.shift(); // Renk dizisini de kaydır
         }
+        
+        previousPrice = currentPrice; // Bir sonraki adım için fiyatı güncelle
+        
+        // Grafiği ve UI'ı güncelle
         chartObj.update();
         refreshUI();
     }
@@ -152,7 +190,7 @@
             cashBalance -= 100;
             tokensOwned += received;
             
-            // Pump etkisi: Hacimli alım fiyatı zıplatır
+            // Pump etkisi: Hacimli alım fiyatı zıplatır (%3 ile %15 arası)
             currentPrice *= (1 + (Math.random() * 0.12 + 0.03)); 
             addChartTick();
         } else {
@@ -166,9 +204,9 @@
             cashBalance += cashEarned;
             tokensOwned = 0;
             
-            // Dump etkisi: Tek seferde büyük satış fiyatı ezer
+            // Dump etkisi: Tek seferde büyük satış fiyatı ezer (%5 ile %23 arası düşüş)
             currentPrice *= (1 - (Math.random() * 0.18 + 0.05));
-            if(currentPrice < 0.000001) currentPrice = 0.000001; 
+            if(currentPrice < 0.000001) currentPrice = 0.000001; // Sıfırlanmasın
             
             addChartTick();
         } else {
@@ -177,7 +215,7 @@
     }
 
     function autoMoveMarket() {
-        // Doğal dalgalanma (Bot alım satımları)
+        // Doğal dalgalanma (Bot alım satımları %2.5 yukarı / %2.5 aşağı)
         currentPrice *= 1 + (Math.random() * 0.05 - 0.025);
         addChartTick();
     }
