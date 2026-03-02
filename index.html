@@ -3,196 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PumpSim - Çökmeyen Sürüm</title>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <title>Icarus Coin - Geleceğe Uçmaya Hazır Ol</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #0b0e14; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; padding: 15px 20px; background: #151924; border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #2b313f; }
-        .logo { font-size: 1.5em; font-weight: bold; color: #14F195; }
-        .wallet { font-size: 1.2em; font-weight: bold; color: #fff; background: #222836; padding: 10px 15px; border-radius: 5px; }
-        
-        .container { width: 100%; max-width: 800px; background: #151924; padding: 20px; border-radius: 8px; border: 1px solid #2b313f; text-align: center; }
-        
-        #setupScreen { display: block; padding: 40px 0; }
-        input[type="text"] { width: 60%; padding: 15px; font-size: 1.5em; text-align: center; border-radius: 5px; border: 2px solid #2b313f; background: #0b0e14; color: white; text-transform: uppercase; font-weight: bold; }
-        .btn-launch { background: #14F195; color: black; font-size: 1.3em; font-weight: bold; padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; transition: 0.1s; }
-        .btn-launch:active { transform: scale(0.95); }
-
-        #marketScreen { display: none; }
-        .top-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .coin-name { font-size: 2em; font-weight: bold; }
-        .price { font-size: 2em; color: #26a69a; font-family: monospace; font-weight: bold; }
-        .inventory { text-align: left; color: #aaa; margin-bottom: 10px; font-size: 1.1em; }
-        
-        #chart { width: 100%; height: 400px; background: #0b0e14; border-radius: 5px; border: 1px solid #2b313f; }
-
-        .controls { display: flex; gap: 15px; margin-top: 20px; }
-        .btn { flex: 1; padding: 20px; font-size: 1.5em; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; color: white; transition: 0.1s; }
-        .btn-buy { background: #26a69a; }
-        .btn-buy:active { background: #1d7d74; transform: scale(0.95); }
-        .btn-sell { background: #ef5350; }
-        .btn-sell:active { background: #c63936; transform: scale(0.95); }
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(90deg, #4b0082, #1a1a2e);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 2px solid #8a2be2;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+        }
+        h1 {
+            color: #ffffff;
+            text-shadow: 0 0 20px #8a2be2, 0 0 40px #8a2be2;
+            margin: 0;
+            font-size: 4em;
+            letter-spacing: 2px;
+        }
+        .subtitle {
+            color: #e0e0e0;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .hero {
+            padding: 100px 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, #2a004f, #0b0c10);
+        }
+        .hero h2 {
+            font-size: 2.5em;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .btn-group {
+            margin-top: 40px;
+        }
+        .btn {
+            background-color: #8a2be2;
+            color: white;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #5c1499;
+            box-shadow: 0 0 20px #8a2be2;
+            transform: translateY(-3px);
+        }
+        .btn-gold {
+            background-color: #ffd700;
+            color: #000;
+        }
+        .btn-gold:hover {
+            background-color: #ffc107;
+            box-shadow: 0 0 20px #ffd700;
+        }
+        section {
+            padding: 60px 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+        h2.section-title {
+            color: #8a2be2;
+            font-size: 2.2em;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .card {
+            background-color: #1f2833;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #8a2be2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+            border-left-color: #ffd700;
+        }
+        .tokenomics-list {
+            list-style: none;
+            padding: 0;
+            font-size: 1.2em;
+        }
+        .tokenomics-list li {
+            background: #1a1a2e;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #4b0082;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background-color: #1a1a2e;
+            border-top: 2px solid #8a2be2;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">💊 PumpSim</div>
-        <div class="wallet">USD: $<span id="cashDisplay">2000.00</span></div>
-    </div>
+    <header>
+        <h1>ICARUS COIN</h1>
+        <p class="subtitle">Sınırları Aşan Yeni Nesil Kripto Deneyimi</p>
+    </header>
 
-    <div class="container" id="setupScreen">
-        <h2>🚀 Lansmana Hazır Mısın?</h2>
-        <input type="text" id="coinInput" value="PUMA" placeholder="COIN ADI GİR">
-        <br>
-        <button class="btn-launch" onclick="baslat()">Piyasaya Sür</button>
-    </div>
-
-    <div class="container" id="marketScreen">
-        <div class="top-info">
-            <div class="coin-name" id="nameDisplay">COIN</div>
-            <div class="price">$<span id="priceDisplay">0.001000</span></div>
-        </div>
-        <div class="inventory" id="tokenDisplay">Cüzdan: 0 Adet</div>
+    <div class="hero">
+        <h2>Güneşe Uçmaktan Korkmayanların Tercihi</h2>
+        <p style="font-size: 1.2em; max-width: 800px; margin: auto;">Icarus Coin, piyasadaki sınırları yıkmak ve yatırımcılarına özgürlüğü sunmak için tasarlandı. Güçlü altyapısı ve yenilikçi sözleşme yapısıyla geleceğe bizimle uçun.</p>
         
-        <div id="chart"></div>
-
-        <div class="controls">
-            <button class="btn btn-buy" onclick="al()">AL (100$)</button>
-            <button class="btn btn-sell" onclick="sat()">TÜMÜNÜ SAT</button>
+        <div class="btn-group">
+            <a href="#whitepaper" class="btn">Whitepaper'ı İncele</a>
+            <a href="#" class="btn btn-gold">Hemen Satın Al</a>
         </div>
     </div>
 
-<script>
-    // DEĞİŞKENLER
-    let bakiyeUSD = 2000.00;
-    let bakiyeToken = 0;
-    let fiyat = 0.001000;
-    
-    // GRAFİK DEĞİŞKENLERİ
-    let chart;
-    let mumVerileri = [];
-    let aktifMum = null;
-    let zamanSayaci = new Date().getTime();
+    <section id="about">
+        <h2 class="section-title">Neden Icarus?</h2>
+        <div class="card">
+            <h3>Topluluk Odaklı Güç</h3>
+            <p>Bizim için en önemli unsur topluluğumuzdur. Icarus Coin, tamamen şeffaf, adil dağıtımlı ve rug-pull riskine karşı korumalı akıllı sözleşmeler ile inşa edilmiştir.</p>
+        </div>
+    </section>
 
-    // SİSTEMİ BAŞLAT
-    function baslat() {
-        let isim = document.getElementById("coinInput").value.trim().toUpperCase();
-        if(isim === "") isim = "PUMA";
-        
-        document.getElementById("nameDisplay").innerText = "$" + isim;
-        document.getElementById("setupScreen").style.display = "none";
-        document.getElementById("marketScreen").style.display = "block";
-        
-        grafikKur();
-        arayuzuGuncelle();
-        
-        // Arka plan hareketleri
-        setInterval(piyasaHareketi, 2000);
-        setInterval(yeniMumAc, 5000);
-    }
+    <section id="whitepaper">
+        <h2 class="section-title">Whitepaper (Özet)</h2>
+        <div class="card">
+            <h3>Vizyonumuz</h3>
+            <p>Amacımız, merkeziyetsiz finansa (DeFi) yeni bir soluk getirerek kullanıcı dostu, düşük işlem ücretlerine sahip ve yüksek hızlı bir ekosistem yaratmaktır.</p>
+            <br>
+            <h3>Teknoloji ve Yol Haritası</h3>
+            <p><strong>Faz 1:</strong> Fikir aşaması, sözleşme oluşturma ve GitHub / Pump.fun entegrasyonları.<br>
+               <strong>Faz 2:</strong> Yoğun pazarlama, airdrop kampanyaları ve ilk büyük borsa (DEX) listelenmesi.<br>
+               <strong>Faz 3:</strong> Staking platformunun açılışı ve global reklam ortaklıkları.</p>
+        </div>
+    </section>
 
-    // ARAYÜZ GÜNCELLEME (Butonların kitlenmemesini sağlayan ana yapı)
-    function arayuzuGuncelle() {
-        document.getElementById("cashDisplay").innerText = bakiyeUSD.toFixed(2);
-        document.getElementById("priceDisplay").innerText = fiyat.toFixed(6);
-        document.getElementById("tokenDisplay").innerText = "Cüzdan: " + Math.floor(bakiyeToken).toLocaleString() + " Adet";
-        
-        // Rengi ayarla
-        if(aktifMum && fiyat >= aktifMum.y[0]) {
-            document.getElementById("priceDisplay").style.color = "#26a69a";
-        } else {
-            document.getElementById("priceDisplay").style.color = "#ef5350";
-        }
-    }
+    <section id="tokenomics">
+        <h2 class="section-title">Tokenomics</h2>
+        <div class="card">
+            <ul class="tokenomics-list">
+                <li><strong>Toplam Arz:</strong> <span>1,000,000,000 ICARUS</span></li>
+                <li><strong>Likidite Havuzu (LP):</strong> <span>%80</span></li>
+                <li><strong>Pazarlama ve Reklam:</strong> <span>%10</span></li>
+                <li><strong>Geliştirme ve Ekip:</strong> <span>%10</span></li>
+            </ul>
+        </div>
+    </section>
 
-    // AL BUTONU
-    function al() {
-        if(bakiyeUSD >= 100) {
-            let alinanMiktar = 100 / fiyat;
-            bakiyeUSD -= 100;
-            bakiyeToken += alinanMiktar;
-            
-            // Fiyatı yapay olarak %4 ile %10 arası fırlat
-            fiyat = fiyat * (1 + (Math.random() * 0.06 + 0.04));
-            
-            arayuzuGuncelle();
-            grafikGuncelle(fiyat);
-        } else {
-            alert("Bakiyen Yetersiz!");
-        }
-    }
-
-    // SAT BUTONU
-    function sat() {
-        if(bakiyeToken > 0) {
-            let eldeEdilen = bakiyeToken * fiyat;
-            bakiyeUSD += eldeEdilen;
-            bakiyeToken = 0;
-            
-            // Fiyatı yapay olarak %5 ile %15 arası çak
-            fiyat = fiyat * (1 - (Math.random() * 0.10 + 0.05));
-            if(fiyat < 0.000001) fiyat = 0.000001;
-            
-            arayuzuGuncelle();
-            grafikGuncelle(fiyat);
-        } else {
-            alert("Satacak Coin Yok!");
-        }
-    }
-
-    // GRAFİK KURULUMU
-    function grafikKur() {
-        var options = {
-            series: [{ data: [] }],
-            chart: { type: 'candlestick', height: 400, background: '#0b0e14', animations: { enabled: false }, toolbar: { show: false } },
-            theme: { mode: 'dark' },
-            xaxis: { type: 'datetime', labels: { show: false }, axisBorder: { show: false } },
-            yaxis: { tooltip: { enabled: true }, labels: { formatter: function(val) { return val.toFixed(6); } } },
-            plotOptions: { candlestick: { colors: { upward: '#26a69a', downward: '#ef5350' }, wick: { useFillColor: true } } },
-            grid: { borderColor: '#2b313f' }
-        };
-
-        chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-        
-        yeniMumAc();
-    }
-
-    // YENİ MUM OLUŞTUR
-    function yeniMumAc() {
-        zamanSayaci += 5000; 
-        aktifMum = {
-            x: zamanSayaci,
-            y: [fiyat, fiyat, fiyat, fiyat] // [Açılış, En Yüksek, En Düşük, Kapanış]
-        };
-        
-        mumVerileri.push(aktifMum);
-        if(mumVerileri.length > 30) mumVerileri.shift(); // Grafiği temiz tut
-        
-        try { chart.updateSeries([{ data: mumVerileri }]); } catch(e){}
-    }
-
-    // MEVCUT MUMU GÜNCELLE
-    function grafikGuncelle(yeniFiyat) {
-        if(!aktifMum) return;
-        
-        aktifMum.y[3] = yeniFiyat; // Kapanışı güncelle
-        if(yeniFiyat > aktifMum.y[1]) aktifMum.y[1] = yeniFiyat; // En yükseği güncelle
-        if(yeniFiyat < aktifMum.y[2]) aktifMum.y[2] = yeniFiyat; // En düşüğü güncelle
-        
-        try { chart.updateSeries([{ data: mumVerileri }]); } catch(e){}
-    }
-
-    // BOT HAREKETLERİ
-    function piyasaHareketi() {
-        let dalgalanma = 1 + (Math.random() * 0.02 - 0.01); // %1 yukarı veya aşağı
-        fiyat = fiyat * dalgalanma;
-        
-        arayuzuGuncelle();
-        grafikGuncelle(fiyat);
-    }
-</script>
+    <footer>
+        <h2 style="color: #fff; text-shadow: 0 0 10px #8a2be2;">ICARUS COIN</h2>
+        <p>&copy; 2026 Icarus Coin Ekibi. Geleceğe Uçuyoruz.</p>
+    </footer>
 
 </body>
 </html>
