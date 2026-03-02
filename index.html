@@ -3,178 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Icarus Coin - Geleceğe Uçmaya Hazır Ol</title>
+    <title>ICARUS COIN | Geleceğe Uçuş Başlıyor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-purple: #9400D3;
+            --dark-purple: #4b0082;
+            --neon-glow: 0 0 20px rgba(148, 0, 211, 0.8), 0 0 40px rgba(148, 0, 211, 0.6);
+            --bg-dark: #050505;
+            --text-light: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
         body {
-            background-color: #0b0c10;
-            color: #c5c6c7;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
             line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
         }
-        header {
-            background: linear-gradient(90deg, #4b0082, #1a1a2e);
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 2px solid #8a2be2;
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+
+        /* Arka Plan Animasyonları (Uzay ve Dünya) */
+        .space-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background: radial-gradient(circle at bottom center, #1a0033 0%, var(--bg-dark) 80%);
+            overflow: hidden;
         }
-        h1 {
-            color: #ffffff;
-            text-shadow: 0 0 20px #8a2be2, 0 0 40px #8a2be2;
-            margin: 0;
-            font-size: 4em;
-            letter-spacing: 2px;
+
+        .stars {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: transparent;
+            box-shadow: 174px 21px #fff, 321px 441px #fff, 543px 212px #fff, 888px 111px #fff, 1200px 543px #fff, 1500px 800px #fff, 200px 700px #fff, 900px 900px #fff, 100px 100px #fff, 600px 600px #fff;
+            animation: animStar 50s linear infinite;
         }
-        .subtitle {
-            color: #e0e0e0;
-            font-size: 1.2em;
-            margin-top: 10px;
+
+        .stars::after {
+            content: " ";
+            position: absolute;
+            top: 2000px;
+            width: 2px;
+            height: 2px;
+            background: transparent;
+            box-shadow: 174px 21px #fff, 321px 441px #fff, 543px 212px #fff, 888px 111px #fff, 1200px 543px #fff, 1500px 800px #fff, 200px 700px #fff, 900px 900px #fff, 100px 100px #fff, 600px 600px #fff;
         }
-        .hero {
-            padding: 100px 20px;
-            text-align: center;
-            background: radial-gradient(circle at center, #2a004f, #0b0c10);
+
+        @keyframes animStar {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
         }
-        .hero h2 {
-            font-size: 2.5em;
-            color: #fff;
-            margin-bottom: 20px;
+
+        .animated-earth {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: repeating-linear-gradient(
+                45deg,
+                #1a0033,
+                #1a0033 20px,
+                #2a004f 20px,
+                #2a004f 40px
+            );
+            box-shadow: 0 0 100px var(--primary-purple), inset -40px -40px 80px rgba(0,0,0,0.8);
+            opacity: 0.3;
+            z-index: -1;
+            animation: rotateEarth 30s linear infinite;
         }
-        .btn-group {
-            margin-top: 40px;
+
+        @keyframes rotateEarth {
+            0% { background-position: 0 0; transform: translate(-50%, -50%) rotate(0deg); }
+            100% { background-position: 600px 600px; transform: translate(-50%, -50%) rotate(360deg); }
         }
-        .btn {
-            background-color: #8a2be2;
-            color: white;
-            padding: 15px 35px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1.1em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            margin: 0 10px;
-            display: inline-block;
-        }
-        .btn:hover {
-            background-color: #5c1499;
-            box-shadow: 0 0 20px #8a2be2;
-            transform: translateY(-3px);
-        }
-        .btn-gold {
-            background-color: #ffd700;
-            color: #000;
-        }
-        .btn-gold:hover {
-            background-color: #ffc107;
-            box-shadow: 0 0 20px #ffd700;
-        }
-        section {
-            padding: 60px 20px;
-            max-width: 1000px;
-            margin: auto;
-        }
-        h2.section-title {
-            color: #8a2be2;
-            font-size: 2.2em;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            text-align: center;
-        }
-        .card {
-            background-color: #1f2833;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border-left: 5px solid #8a2be2;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: scale(1.02);
-            border-left-color: #ffd700;
-        }
-        .tokenomics-list {
-            list-style: none;
-            padding: 0;
-            font-size: 1.2em;
-        }
-        .tokenomics-list li {
-            background: #1a1a2e;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-between;
-            border: 1px solid #4b0082;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(148, 0, 211, 0.3);
         }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--neon-glow);
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 30px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-purple);
+        }
+
+        /* Ortak İçerik Kutuları (Glassmorphism) */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            color: #ffffff;
+            text-shadow: var(--neon-glow);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite alternate;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin-bottom: 40px;
+            color: #d1d1d1;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-glow {
+            background: linear-gradient(45deg, var(--dark-purple), var(--primary-purple));
+            color: white;
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: var(--neon-glow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid #fff;
+        }
+
+        .btn-glow:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(148, 0, 211, 1), 0 0 60px rgba(148, 0, 211, 0.8);
+        }
+
+        /* Sections */
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 60px;
+            text-shadow: 0 0 15px var(--primary-purple);
+            text-transform: uppercase;
+        }
+
+        /* Whitepaper */
+        .whitepaper-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .card {
+            background: rgba(10, 5, 20, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(148, 0, 211, 0.4);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 25px rgba(148, 0, 211, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: var(--primary-purple);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px rgba(148, 0, 211, 0.5);
+        }
+
+        /* Tokenomics */
+        .token-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: rgba(20, 5, 35, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary-purple);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            box-shadow: inset 0 0 20px rgba(148,0,211,0.2);
+        }
+
+        .stat-box h4 {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .stat-box .number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 15px var(--primary-purple);
+        }
+
+        /* Roadmap */
+        .roadmap-timeline {
+            border-left: 4px solid var(--primary-purple);
+            padding-left: 30px;
+            margin-left: 20px;
+        }
+
+        .roadmap-item {
+            margin-bottom: 40px;
+            position: relative;
+            background: rgba(10, 5, 20, 0.7);
+            padding: 25px;
+            border-radius: 0 15px 15px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(148, 0, 211, 0.2);
+            border-left: none;
+        }
+
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            left: -42px;
+            top: 30px;
+            width: 24px;
+            height: 24px;
+            background: var(--bg-dark);
+            border: 4px solid var(--primary-purple);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--primary-purple);
+        }
+
+        .roadmap-item h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        /* Footer */
         footer {
             text-align: center;
-            padding: 30px;
-            background-color: #1a1a2e;
-            border-top: 2px solid #8a2be2;
-            margin-top: 50px;
+            padding: 50px;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid var(--dark-purple);
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 20px rgba(148,0,211,0.5); }
+            100% { text-shadow: 0 0 40px rgba(148,0,211,1), 0 0 80px rgba(148,0,211,0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .whitepaper-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 3.5rem; }
+            .nav-links { display: none; }
+            .animated-earth { width: 300px; height: 300px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>ICARUS COIN</h1>
-        <p class="subtitle">Sınırları Aşan Yeni Nesil Kripto Deneyimi</p>
-    </header>
-
-    <div class="hero">
-        <h2>Güneşe Uçmaktan Korkmayanların Tercihi</h2>
-        <p style="font-size: 1.2em; max-width: 800px; margin: auto;">Icarus Coin, piyasadaki sınırları yıkmak ve yatırımcılarına özgürlüğü sunmak için tasarlandı. Güçlü altyapısı ve yenilikçi sözleşme yapısıyla geleceğe bizimle uçun.</p>
-        
-        <div class="btn-group">
-            <a href="#whitepaper" class="btn">Whitepaper'ı İncele</a>
-            <a href="#" class="btn btn-gold">Hemen Satın Al</a>
-        </div>
+    <div class="space-background">
+        <div class="stars"></div>
     </div>
+    <div class="animated-earth"></div>
 
-    <section id="about">
-        <h2 class="section-title">Neden Icarus?</h2>
-        <div class="card">
-            <h3>Topluluk Odaklı Güç</h3>
-            <p>Bizim için en önemli unsur topluluğumuzdur. Icarus Coin, tamamen şeffaf, adil dağıtımlı ve rug-pull riskine karşı korumalı akıllı sözleşmeler ile inşa edilmiştir.</p>
+    <nav>
+        <div class="logo">ICARUS</div>
+        <div class="nav-links">
+            <a href="#about">Hakkında</a>
+            <a href="#whitepaper">Whitepaper</a>
+            <a href="#tokenomics">Tokenomics</a>
+            <a href="#roadmap">Yol Haritası</a>
+        </div>
+    </nav>
+
+    <section class="content-wrapper hero" id="about">
+        <h1>ICARUS COIN</h1>
+        <p>Merkeziyetsiz finansın yeni efsanesi. Sınırları aş, güneşe dokun. Adil dağıtım, kilitli likidite ve durdurulamaz bir topluluk gücüyle pump'a hazır ol.</p>
+        <a href="#buy" class="btn-glow">Hizmete gel</a>
+    </section>
+
+    <section class="content-wrapper" id="whitepaper">
+        <h2 class="section-title">Whitepaper (V1.0)</h2>
+        <div class="whitepaper-grid">
+            <div class="card">
+                <h3>1. Giriş ve Vizyon</h3>
+                <p>Icarus Coin, piyasadaki manipülatif ön satışlardan (presale) ve rug-pull dolandırıcılıklarından bıkan yatırımcılar için güvenli bir liman olarak tasarlanmıştır. Vizyonumuz, gücünü tamamen topluluktan alan, şeffaf ve adil bir ekosistem yaratmaktır. Icarus, sadece bir token değil, finansal özgürlüğe açılan bir isyandır.</p>
+            </div>
+            <div class="card">
+                <h3>2. Güvenlik Protokolleri</h3>
+                <p>Yatırımcı güvenliği en büyük önceliğimizdir. Akıllı sözleşmemiz (Smart Contract) oluşturulduğu an sahiplik feragat edilecek (Renounced Ownership) ve likidite havuzu (LP) kilitlenecektir. Hiçbir cüzdan, toplam arzın %2'sinden fazlasını tek seferde alıp satamaz (Anti-Whale Mekanizması).</p>
+            </div>
+            <div class="card">
+                <h3>3. Ekosistem ve Pump Mekaniği</h3>
+                <p>Pump.fun gibi platformların adil lansman dinamiklerini baz alarak, bot saldırılarını engelleyen özel bir vergi (tax) sistemi uygulanmaktadır. Alım satımlardan kesilen cüzi miktar, doğrudan pazarlama cüzdanına aktarılarak kesintisiz bir reklam bütçesi oluşturur.</p>
+            </div>
+            <div class="card">
+                <h3>4. Pazarlama Stratejisi</h3>
+                <p>Geleneksel pazarlamanın ötesine geçiyoruz. Kripto fenomenleri (KOLs), agresif Twitter raidleri, airdrop kampanyaları ve büyük borsa listelenmeleri (CEX/DEX) ile Icarus Coin adını her yerde duyuracağız. Organik büyüme ve FOMO bizim en büyük silahımız.</p>
+            </div>
         </div>
     </section>
 
-    <section id="whitepaper">
-        <h2 class="section-title">Whitepaper (Özet)</h2>
-        <div class="card">
-            <h3>Vizyonumuz</h3>
-            <p>Amacımız, merkeziyetsiz finansa (DeFi) yeni bir soluk getirerek kullanıcı dostu, düşük işlem ücretlerine sahip ve yüksek hızlı bir ekosistem yaratmaktır.</p>
-            <br>
-            <h3>Teknoloji ve Yol Haritası</h3>
-            <p><strong>Faz 1:</strong> Fikir aşaması, sözleşme oluşturma ve GitHub / Pump.fun entegrasyonları.<br>
-               <strong>Faz 2:</strong> Yoğun pazarlama, airdrop kampanyaları ve ilk büyük borsa (DEX) listelenmesi.<br>
-               <strong>Faz 3:</strong> Staking platformunun açılışı ve global reklam ortaklıkları.</p>
-        </div>
-    </section>
-
-    <section id="tokenomics">
+    <section class="content-wrapper" id="tokenomics">
         <h2 class="section-title">Tokenomics</h2>
-        <div class="card">
-            <ul class="tokenomics-list">
-                <li><strong>Toplam Arz:</strong> <span>1,000,000,000 ICARUS</span></li>
-                <li><strong>Likidite Havuzu (LP):</strong> <span>%80</span></li>
-                <li><strong>Pazarlama ve Reklam:</strong> <span>%10</span></li>
-                <li><strong>Geliştirme ve Ekip:</strong> <span>%10</span></li>
-            </ul>
+        <div class="token-stats">
+            <div class="stat-box">
+                <h4>Toplam Arz</h4>
+                <div class="number">1 Milyar</div>
+                <p>ICARUS</p>
+            </div>
+            <div class="stat-box">
+                <h4>Likidite Havuzu (LP)</h4>
+                <div class="number">%85</div>
+                <p>Kilitli & Güvende</p>
+            </div>
+            <div class="stat-box">
+                <h4>Pazarlama (Marketing)</h4>
+                <div class="number">%10</div>
+                <p>Agresif Büyüme</p>
+            </div>
+            <div class="stat-box">
+                <h4>Airdrop & Topluluk</h4>
+                <div class="number">%5</div>
+                <p>Sadakat Ödülleri</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-wrapper" id="roadmap">
+        <h2 class="section-title">Yol Haritası</h2>
+        <div class="roadmap-timeline">
+            <div class="roadmap-item">
+                <h3>Faz 1: Kalkışa Hazırlık</h3>
+                <p>Website ve Sosyal Medya Kanallarının Açılması • Akıllı Sözleşmenin (Contract) Yazılması • Topluluk İnşası (Telegram & Twitter) • Gizli Pazarlama Kampanyalarının Başlaması.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Faz 2: Güneşe Doğru (Lansman)</h3>
+                <p>Adil Lansman (Fair Launch) • DexScreener ve DEXTools Trendlerine Giriş • Likidite Kilitleme (LP Lock) • İlk Büyük Influencer Ortaklıkları.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Faz 3: Atmosferi Aşmak</h3>
+                <p>CoinMarketCap ve CoinGecko Listelenmeleri • 10.000+ Holder Hedefi • Devreye Giren Yeni Pazarlama Fonları • Merkezi Borsa (CEX) Görüşmelerinin Başlaması.</p>
+            </div>
+            <div class="roadmap-item">
+                <h3>Faz 4: Efsaneye Dönüş</h3>
+                <p>Tier 2 ve Tier 1 Borsa (CEX) Listelenmeleri • Icarus Staking Platformunun Açılışı • Global Kripto Etkinliklerinde Sponsorluklar.</p>
+            </div>
         </div>
     </section>
 
     <footer>
-        <h2 style="color: #fff; text-shadow: 0 0 10px #8a2be2;">ICARUS COIN</h2>
-        <p>&copy; 2026 Icarus Coin Ekibi. Geleceğe Uçuyoruz.</p>
+        <h2 style="color: var(--primary-purple); font-size: 2rem; margin-bottom: 10px;">ICARUS COIN</h2>
+        <p>Sorumluluk Reddi: Kripto para yatırımları yüksek risk içerir. Kendi araştırmanızı yapın (DYOR).</p>
+        <p style="margin-top: 20px; color: #555;">&copy; 2026 Icarus Coin. Tüm hakları saklıdır.</p>
     </footer>
 
 </body>
